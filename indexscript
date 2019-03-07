@@ -1,0 +1,47 @@
+@section scripts{
+<script language="Javascript">
+    const reader = new FileReader()
+    var frame = document.getElementById('frame')
+    var input = document.getElementById('take-picture')
+    var btnEnviar = $('#btnEnviar')
+
+    input.addEventListener('change', function (e)
+    {
+        var file = e.target.files[0]
+        reader.readAsDataURL(file)
+        reader.onloadend = function ()
+        {
+            base64data = reader.result;
+            $('#frame').attr('src', base64data)
+            $('#frame').css('display', 'block')
+        }
+        frame.src = URL.createObjectURL(file)
+    });
+
+    btnEnviar.on('click', function (e) {
+        e.preventDefault()
+        enviarImagem()
+    })
+
+    function enviarImagem() {
+        let data_uri = $('#frame').attr('src')
+        let image = {
+            ImagemBase64: data_uri.replace(/^data\:image\/\w+\;base64\,/, '') //data:image/jpeg;base64, 
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Enviar", "Home")',
+            dataType: 'JSON',
+            contentType: "application/json",
+            data: JSON.stringify(image),
+            success: function (response) {
+                console.log('erro: ', response)
+            },
+            error: function (error) {
+                console.log('erro: ', error)
+            }
+        })
+
+    }
+</script>
+}
